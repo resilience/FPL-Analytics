@@ -4,6 +4,7 @@ import csv
 import os
 
 import sys
+from unidecode import unidecode
 from urllib.request import FancyURLopener
 
 
@@ -18,7 +19,7 @@ myopener = MyOpener()
 
 
 # player ID's selected for evaluation
-playerIDArray =['','','','','']
+playerIDArray =['283','372']
 
 
 for player in playerIDArray:
@@ -34,18 +35,33 @@ for player in playerIDArray:
         continue
 
     try:
-         apiPlayerSearch = myopener.open(this.strip()).read()
-
+        apiPlayerSearch = myopener.open(this.strip()).read()
     except ValueError as vE:
         print('Value Error on ' + param)
         continue
 
 
+    fplPlayerData = json.loads(apiPlayerSearch.decode('utf-8'))
+
+  #  print(fplPlayerData)
+    gameweeks = list(range(0, 37))
+    try:
+        for gameweek in gameweeks:
+            round = fplPlayerData['history'][gameweek].get('round')
+
+            points = fplPlayerData['history'][gameweek].get('total_points')
+            print("round: ", round, " points: ", points)
+
+    except IndexError as iE:
+
+        continue
+
+   # print(gw1)
 
     # The difficulty bubble is the range (1-5) opponents of the same calibre as the selected players next opponents
     # The difficulty bubble thus showcases the average points expected for the next match, based on the historical data
     # of similar opponent strength and the points generated against them.
-
+'''
     opponenentRank =
     oR = opponentRank
     difficultyBubbleFixtures = [ oR-2, oR-1 ,oR ,oR +1, oR +2]
@@ -64,4 +80,4 @@ for player in playerIDArray:
 
     explosivity
 
-
+'''
