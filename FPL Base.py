@@ -19,7 +19,8 @@ myopener = MyOpener()
 
 
 # player ID's selected for evaluation
-playerIDArray =['253','372','122','23','270','246','275','302','172']
+playerIDArray =['372']
+#playerIDArray =['253','372','122','23','270','246','275','302','172']
 
 
 for player in playerIDArray:
@@ -44,7 +45,7 @@ for player in playerIDArray:
 
     fplPlayerData = json.loads(apiPlayerSearch.decode('utf-8'))
 
-  #  print(fplPlayerData)
+    print(fplPlayerData)
     gameweeks = list(range(0, 37))
     try:
         rounds = list()
@@ -63,6 +64,22 @@ for player in playerIDArray:
     rollingAverage = sum(points[-10:])/10
     print("rolling average ( 10 weeks ) ",rollingAverage)
 
+    nextOpponent = fplPlayerData['fixtures'][0].get('opponent_name')
+    opponentHome = fplPlayerData['fixtures'][0].get('is_home')
+
+    if opponentHome == True:
+        opponentID = fplPlayerData['fixtures'][0].get('team_a')
+    elif opponentHome == False:
+
+        opponentID = fplPlayerData['fixtures'][0].get('team_h')
+
+    print('nextOpponent: ',nextOpponent)
+    print('opponent playing Home? ',opponentHome)
+    print('opponentID ', opponentID)
+
+
+
+
 
    # print(gw1)
 
@@ -77,7 +94,7 @@ for player in playerIDArray:
 
 
     nextFixtureAverage = difficultyBubblePoints / difficultyBubbleFixtures
-    tenWeekRollingAverage = lastTenGameData / 10
+    
 
     # Explosivity is calculated as 1% for each fixture in the difficulty bubble
     # that has a chance of exploding ( gaining more than 10 points )
