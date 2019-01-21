@@ -19,7 +19,7 @@ myopener = MyOpener()
 
 
 # player ID's selected for evaluation
-playerIDArray =['283','372']
+playerIDArray =['253','372','122','23','270','246','275','302','172']
 
 
 for player in playerIDArray:
@@ -27,6 +27,7 @@ for player in playerIDArray:
     apiPlayerURL = 'https://fantasy.premierleague.com/drf/element-summary/'
     param = player
 
+    apiSummaryURL = ''
     try:
         this = apiPlayerURL + param
 
@@ -46,15 +47,22 @@ for player in playerIDArray:
   #  print(fplPlayerData)
     gameweeks = list(range(0, 37))
     try:
+        rounds = list()
+        points = list()
         for gameweek in gameweeks:
             round = fplPlayerData['history'][gameweek].get('round')
+            rounds.append(round)
+            point = fplPlayerData['history'][gameweek].get('total_points')
+            points.append(point)
 
-            points = fplPlayerData['history'][gameweek].get('total_points')
-            print("round: ", round, " points: ", points)
+            print("round: ", round, " points: ", point)
 
     except IndexError as iE:
 
-        continue
+        print()
+    rollingAverage = sum(points[-10:])/10
+    print("rolling average ( 10 weeks ) ",rollingAverage)
+
 
    # print(gw1)
 
