@@ -28,7 +28,9 @@ for player in playerIDArray:
     apiPlayerURL = 'https://fantasy.premierleague.com/drf/element-summary/'
     param = player
 
-    apiSummaryURL = ''
+    apiSummaryURL = 'https://fantasy.premierleague.com/drf/bootstrap-static'
+
+    apiTeamURL = 'https://fantasy.premierleague.com/drf/bootstrap'
     try:
         this = apiPlayerURL + param
 
@@ -38,14 +40,17 @@ for player in playerIDArray:
 
     try:
         apiPlayerSearch = myopener.open(this.strip()).read()
+        apiSummarySearch = myopener.open(apiSummaryURL.strip()).read()
+
+
     except ValueError as vE:
         print('Value Error on ' + param)
         continue
 
-
     fplPlayerData = json.loads(apiPlayerSearch.decode('utf-8'))
+    fplSummaryData = json.loads(apiSummarySearch.decode('utf-8'))
 
-    print(fplPlayerData)
+    #print(fplSummaryData)
     gameweeks = list(range(0, 37))
     try:
         rounds = list()
@@ -78,10 +83,28 @@ for player in playerIDArray:
     print('opponentID ', opponentID)
 
 
+    try:
+        teamURL = apiTeamURL
+        apiTeamSearch = myopener.open(teamURL.strip()).read()
+        fplTeamData = json.loads(apiTeamSearch.decode('utf-8'))
+        print(fplTeamData)
 
+    except ValueError as vE:
+        print('Value Error at Team Load')
 
+    # ______________________________RANKING__________________________________
 
-   # print(gw1)
+    # https://fantasy.premierleague.com/drf/fixtures/ page shows match id's going up to 224+
+    # can use this to
+    # find each matches participants using "team_a":11,"team_h":14  and scores using "team_h_score":2,"team_a_score":1
+    #
+    # Highest score wins the match
+    # Teams receive three points for a win and one point for a draw
+    # Rank Team accordingly
+
+    # Using the ranking we can then find out the teams in the current difficulty bubble
+
+    # ________________________ DIFFICULTY BUBBLE___________________________
 
     # The difficulty bubble is the range (1-5) opponents of the same calibre as the selected players next opponents
     # The difficulty bubble thus showcases the average points expected for the next match, based on the historical data
