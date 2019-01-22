@@ -2,7 +2,7 @@ import requests
 import urllib, json
 import csv
 import os
-
+import numpy as np
 import sys
 from unidecode import unidecode
 from urllib.request import FancyURLopener
@@ -22,6 +22,55 @@ myopener = MyOpener()
 playerIDArray =['372']
 #playerIDArray =['253','372','122','23','270','246','275','302','172']
 
+# ______________________________RANKING__________________________________
+
+
+# https://fantasy.premierleague.com/drf/fixtures/ page shows match id's going up to 224+
+# can use this to
+# find each matches participants using "team_a":11,"team_h":14  and scores using "team_h_score":2,"team_a_score":1
+#
+# Highest score wins the match
+# Teams receive three points for a win and one point for a draw
+# Rank Team accordingly
+
+# Using the ranking we can then find out the teams in the current difficulty bubble
+
+apiFixturesURL = 'https://fantasy.premierleague.com/drf/fixtures/'
+apiFixturesSearch = myopener.open(apiFixturesURL.strip()).read()
+fplFixturesData = json.loads(apiFixturesSearch.decode('utf-8'))
+ids = list(range(0, 500))
+
+teamMatrix = np.zeros((20, 1))
+np.c_[teamMatrix, 0:20]
+print(teamMatrix[2])
+for id in ids:
+        try:
+            scoreA = fplFixturesData[id].get('team_a_score')
+            scoreH = fplFixturesData[id].get('team_h_score')
+            teamA = fplFixturesData[id].get('team_a')
+            teamH = fplFixturesData[id].get('team_h')
+          #  print("Away Team: ", teamA, ", score: ", scoreA)
+          #  print("Home Team: ", teamH, ", score: ", scoreH)
+#
+            if scoreA > scoreH:
+                np.append(teamMatrix[teamA], 3)
+            #    print(teamMatrix)
+            elif scoreA < scoreH:
+                np.append(teamMatrix[teamH], 3)
+            #    print(teamMatrix)
+            elif scoreA == scoreH:
+                np.append(teamMatrix[teamH], 1)
+                np.append(teamMatrix[teamA], 1)
+             #   print(teamMatrix[teamA])
+             #   print(teamMatrix[teamH])
+        except (IndexError, TypeError) as iE:
+
+            continue
+print("All matches swept")
+
+
+
+#________________________________PLAYER ANALYSIS_______________________________
 
 for player in playerIDArray:
 
@@ -92,17 +141,7 @@ for player in playerIDArray:
     except ValueError as vE:
         print('Value Error at Team Load')
 
-    # ______________________________RANKING__________________________________
 
-    # https://fantasy.premierleague.com/drf/fixtures/ page shows match id's going up to 224+
-    # can use this to
-    # find each matches participants using "team_a":11,"team_h":14  and scores using "team_h_score":2,"team_a_score":1
-    #
-    # Highest score wins the match
-    # Teams receive three points for a win and one point for a draw
-    # Rank Team accordingly
-
-    # Using the ranking we can then find out the teams in the current difficulty bubble
 
     # ________________________ DIFFICULTY BUBBLE___________________________
 
