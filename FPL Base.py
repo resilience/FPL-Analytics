@@ -19,8 +19,8 @@ myopener = MyOpener()
 
 
 # player ID's selected for evaluation
-playerIDArray =['372']
-#playerIDArray =['253','372','122','23','270','246','275','302','172']
+#playerIDArray =['372']
+playerIDArray =['253','372','122','23','270','246','275','302','172']
 
 # ______________________________RANKING__________________________________
 
@@ -38,36 +38,39 @@ playerIDArray =['372']
 apiFixturesURL = 'https://fantasy.premierleague.com/drf/fixtures/'
 apiFixturesSearch = myopener.open(apiFixturesURL.strip()).read()
 fplFixturesData = json.loads(apiFixturesSearch.decode('utf-8'))
-ids = list(range(1, 230))
+fixtures = list(range(0, 233))
 
 teamMatrix = np.zeros((20, 2))
 teamMatrix[:,0] = np.arange(1, 21)
 
-for id in ids:
+for fixture in fixtures:
         try:
+            id = fplFixturesData[fixture].get('id')
             print('match id: ',id)
-            scoreA = fplFixturesData[id].get('team_a_score')
-            scoreH = fplFixturesData[id].get('team_h_score')
-            teamA = fplFixturesData[id].get('team_a')
-            teamH = fplFixturesData[id].get('team_h')
+            scoreA = fplFixturesData[fixture].get('team_a_score')
+            scoreH = fplFixturesData[fixture].get('team_h_score')
+            teamA = fplFixturesData[fixture].get('team_a')
+            teamH = fplFixturesData[fixture].get('team_h')
             print("Away Team: ", teamA, ", score: ", scoreA)
             print("Home Team: ", teamH, ", score: ", scoreH)
 
             if scoreA > scoreH:
-                teamMatrix[teamA,1] = teamMatrix[teamA,1]+3
+                teamMatrix[teamA-1,1] = teamMatrix[teamA-1,1]+3
                 print("team ", teamA," wins")
                 print("printing matrix: teamMatrix ", teamMatrix)
                 print("printing matrix: teamMatrix[teamA][0] ", teamMatrix[teamA][0])
                 print("printing matrix: teamMatrix[teamA][1] ", teamMatrix[teamA][1])
 
             elif scoreA < scoreH:
-                #teamMatrix = np.add(teams[teamH][1], 3)
+                teamMatrix[teamH-1, 1] = teamMatrix[teamH-1, 1] + 3
                 print("team ", teamH," wins")
-                print("printing matrix: teamMatrix[teamH] ", teamMatrix[teamH][0])
+                print("printing matrix: teamMatrix ", teamMatrix)
+                print("printing matrix: teamMatrix[teamA][0] ", teamMatrix[teamH][0])
+                print("printing matrix: teamMatrix[teamA][1] ", teamMatrix[teamH][1])
             elif scoreA == scoreH:
                 print("teams draw")
-                np.add(teamMatrix[teamH], 1)
-                np.add(teamMatrix[teamA], 1)
+                teamMatrix[teamA-1, 1] = teamMatrix[teamA-1, 1] + 1
+                teamMatrix[teamH-1, 1] = teamMatrix[teamH-1, 1] + 1
                 print("team A teamMatrix[teamA] ",teamMatrix[teamA])
                 print("team H teamMatrix[teamH] ", teamMatrix[teamH])
 
