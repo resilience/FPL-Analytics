@@ -81,6 +81,7 @@ print("All matches swept")
 
 # ____________________ SORT RANKING___________________
 teamMatrix = teamMatrix[teamMatrix[:, 1].argsort()[::-1]]
+teamMatrix[:, 2] = np.arange(1, 21)
 print(teamMatrix)
 
 
@@ -152,7 +153,6 @@ for player in playerIDArray:
     # The difficulty bubble thus showcases the average points expected for the next match, based on the historical data
     # of similar opponent strength and the points generated against them.
 
-    teamMatrix[:, 2] = np.arange(1, 21)
     teamMatrix = teamMatrix[teamMatrix[:, 0].argsort()]
     team = fplSummaryData['elements'][int(player)].get('team')
     print('Team: ', team)
