@@ -40,7 +40,7 @@ apiFixturesSearch = myopener.open(apiFixturesURL.strip()).read()
 fplFixturesData = json.loads(apiFixturesSearch.decode('utf-8'))
 fixtures = list(range(0, 233))
 
-teamMatrix = np.zeros((20, 2))
+teamMatrix = np.zeros((20, 3))
 teamMatrix[:,0] = np.arange(1, 21)
 
 for fixture in fixtures:
@@ -79,9 +79,12 @@ for fixture in fixtures:
             continue
 print("All matches swept")
 
+# ____________________ SORT RANKING___________________
+teamMatrix = teamMatrix[teamMatrix[:, 1].argsort()[::-1]]
+print(teamMatrix)
 
 
-#________________________________PLAYER ANALYSIS_______________________________
+# ________________________________PLAYER ANALYSIS_______________________________
 
 for player in playerIDArray:
 
@@ -128,7 +131,7 @@ for player in playerIDArray:
         print()
     rollingAverage = sum(points[-10:])/10
     print("rolling average ( 10 weeks ) ",rollingAverage)
-
+    playerTeam = fplPlayerData['fixtures'][0].get('opponent_name')
     nextOpponent = fplPlayerData['fixtures'][0].get('opponent_name')
     opponentHome = fplPlayerData['fixtures'][0].get('is_home')
 
@@ -140,18 +143,7 @@ for player in playerIDArray:
 
     print('nextOpponent: ',nextOpponent)
     print('opponent playing Home? ',opponentHome)
-    print('opponentID ', opponentID)
-
-
-    try:
-        teamURL = apiTeamURL
-        apiTeamSearch = myopener.open(teamURL.strip()).read()
-        fplTeamData = json.loads(apiTeamSearch.decode('utf-8'))
-       # print(fplTeamData)
-
-    except ValueError as vE:
-        print('Value Error at Team Load')
-
+    print('next opponent ID: ', opponentID)
 
 
     # ________________________ DIFFICULTY BUBBLE___________________________
@@ -159,6 +151,42 @@ for player in playerIDArray:
     # The difficulty bubble is the range (1-5) opponents of the same calibre as the selected players next opponents
     # The difficulty bubble thus showcases the average points expected for the next match, based on the historical data
     # of similar opponent strength and the points generated against them.
+
+    teamMatrix[:, 2] = np.arange(1, 21)
+    teamMatrix = teamMatrix[teamMatrix[:, 0].argsort()]
+    team = fplSummaryData['elements'][int(player)].get('team')
+    print('Team: ', team)
+
+    print(teamMatrix)
+
+    # not sure why, the below is not returning the right values, change 0 to 1 or 2 and test
+
+    oR = teamMatrix[opponentID - 1][2]
+    print('Opponent Rank: ', oR)
+
+    difficultyRank = [oR-2, oR-1, oR, oR+1, oR+2]
+    print(difficultyRank)
+    difficultyBubble = [opponentID]
+
+
+
+
+
+
+
+    # ________________________ EXPLOSIVENESS _____________________
+
+    # Explosiveness is calculated as 1% for each fixture in the difficulty bubble
+    # that has a chance of exploding ( gaining more than 10 points )
+    # Chance for exploding is calculated by comparing the explosions that have occurred
+    # against the calibre of fixtures playing.
+    # for instance if Liverpool is the top team, and the player selected has exploded against liverpool
+    # the player gains 1% for each team in his difficulty bubble that is weaker than Liverpool
+
+    # _________________________CSV OUTPUT________________________
+
+    # Store data as 'n collection in CSV for viewing in excel or upload to site
+
 '''
     opponenentRank =
     oR = opponentRank
@@ -167,15 +195,5 @@ for player in playerIDArray:
 
 
     nextFixtureAverage = difficultyBubblePoints / difficultyBubbleFixtures
-    
-
-    # Explosivity is calculated as 1% for each fixture in the difficulty bubble
-    # that has a chance of exploding ( gaining more than 10 points )
-    # Chance for exploding is calculated by comparing the explosions that have occured
-    # against the calibre of fixtures playing.
-    # for instance if Liverpool is the top team, and the player selected has exploded against liverpool
-    # the player gains 1% for each team in his difficulty bubble that is weaker than Liverpool
-
-    explosivity
 
 '''
