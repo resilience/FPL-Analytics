@@ -38,31 +38,39 @@ playerIDArray =['372']
 apiFixturesURL = 'https://fantasy.premierleague.com/drf/fixtures/'
 apiFixturesSearch = myopener.open(apiFixturesURL.strip()).read()
 fplFixturesData = json.loads(apiFixturesSearch.decode('utf-8'))
-ids = list(range(0, 500))
+ids = list(range(1, 230))
 
-teamMatrix = np.zeros((20, 1))
-np.c_[teamMatrix, 0:20]
-print(teamMatrix[2])
+teamMatrix = np.zeros((20, 2))
+teamMatrix[:,0] = np.arange(1, 21)
+
 for id in ids:
         try:
+            print('match id: ',id)
             scoreA = fplFixturesData[id].get('team_a_score')
             scoreH = fplFixturesData[id].get('team_h_score')
             teamA = fplFixturesData[id].get('team_a')
             teamH = fplFixturesData[id].get('team_h')
-          #  print("Away Team: ", teamA, ", score: ", scoreA)
-          #  print("Home Team: ", teamH, ", score: ", scoreH)
-#
+            print("Away Team: ", teamA, ", score: ", scoreA)
+            print("Home Team: ", teamH, ", score: ", scoreH)
+
             if scoreA > scoreH:
-                np.append(teamMatrix[teamA], 3)
-            #    print(teamMatrix)
+                teamMatrix[teamA,1] = teamMatrix[teamA,1]+3
+                print("team ", teamA," wins")
+                print("printing matrix: teamMatrix ", teamMatrix)
+                print("printing matrix: teamMatrix[teamA][0] ", teamMatrix[teamA][0])
+                print("printing matrix: teamMatrix[teamA][1] ", teamMatrix[teamA][1])
+
             elif scoreA < scoreH:
-                np.append(teamMatrix[teamH], 3)
-            #    print(teamMatrix)
+                #teamMatrix = np.add(teams[teamH][1], 3)
+                print("team ", teamH," wins")
+                print("printing matrix: teamMatrix[teamH] ", teamMatrix[teamH][0])
             elif scoreA == scoreH:
-                np.append(teamMatrix[teamH], 1)
-                np.append(teamMatrix[teamA], 1)
-             #   print(teamMatrix[teamA])
-             #   print(teamMatrix[teamH])
+                print("teams draw")
+                np.add(teamMatrix[teamH], 1)
+                np.add(teamMatrix[teamA], 1)
+                print("team A teamMatrix[teamA] ",teamMatrix[teamA])
+                print("team H teamMatrix[teamH] ", teamMatrix[teamH])
+
         except (IndexError, TypeError) as iE:
 
             continue
@@ -136,7 +144,7 @@ for player in playerIDArray:
         teamURL = apiTeamURL
         apiTeamSearch = myopener.open(teamURL.strip()).read()
         fplTeamData = json.loads(apiTeamSearch.decode('utf-8'))
-        print(fplTeamData)
+       # print(fplTeamData)
 
     except ValueError as vE:
         print('Value Error at Team Load')
