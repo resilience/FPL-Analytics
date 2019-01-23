@@ -165,8 +165,43 @@ for player in playerIDArray:
     print('Opponent Rank: ', oR)
 
     difficultyRank = [oR-2, oR-1, oR, oR+1, oR+2]
+
     print(difficultyRank)
-    difficultyBubble = [opponentID]
+
+    o1 = oR - 2
+    o2 = int(oR - 1)
+    o3 = int(oR)
+    o4 = int(oR + 1)
+    o5 = int(oR + 2)
+
+    # Finding how deep the rank is we're looking for
+
+    def column(matrix, i):
+        return [row[i] for row in matrix]
+    print('column 3 values: ')
+    rankList = column(teamMatrix, 2)
+    print('rank list: ', rankList)
+    item1Depth = rankList.index(o1)
+    item2Depth = rankList.index(o2)
+    item3Depth = rankList.index(o3)
+    item4Depth = rankList.index(o4)
+    item5Depth = rankList.index(o5)
+
+    print('item 1 depth: ', item1Depth)
+
+    opID1 = teamMatrix[item1Depth][0]
+    opID2 = teamMatrix[item2Depth][0]
+    opID3 = teamMatrix[item3Depth][0]
+    opID4 = teamMatrix[item4Depth][0]
+    opID5 = teamMatrix[item5Depth][0]
+
+    print('opponent 1: team ', opID1)
+    print('opponent 2: team ', opID2)
+    print('opponent 3: team ', opID3)
+    print('opponent 4: team ', opID4)
+    print('opponent 5: team ', opID5)
+
+    difficultyBubble = [opID1, opID2, opID3, opID4, opID5]
 
 
 
