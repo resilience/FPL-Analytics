@@ -146,8 +146,8 @@ for player in playerIDArray:
     print('opponent playing Home? ',opponentHome)
     print('next opponent ID: ', opponentID)
 
-
     # ________________________ DIFFICULTY BUBBLE___________________________
+    # 2.
 
     # The difficulty bubble is the range (1-5) opponents of the same calibre as the selected players next opponents
     # The difficulty bubble thus showcases the average points expected for the next match, based on the historical data
@@ -164,20 +164,20 @@ for player in playerIDArray:
     oR = teamMatrix[opponentID - 1][2]
     print('Opponent Rank: ', oR)
 
-    difficultyRank = [oR-2, oR-1, oR, oR+1, oR+2]
+    # ______________________________ RANK WEIGHTING ___________________________
+    # 2. 1
 
-    print(difficultyRank)
-
+    # TO DO
     # Points should be allocated differently depending on the distance from the first ranking
     # Thus weaker teams should way less towards the difficulty, and stronger teams should way more.
 
-    if 3 <= oR <= 8:
+    if 3 <= oR <= 18:
         o1 = int(oR - 2)
         o2 = int(oR - 1)
         o3 = int(oR)
         o4 = int(oR + 1)
         o5 = int(oR + 2)
-        
+
     elif oR == 2:
         o1 = int(oR + 3)
         o2 = int(oR - 1)
@@ -192,14 +192,14 @@ for player in playerIDArray:
         o4 = int(oR + 1)
         o5 = int(oR + 2)
 
-    elif oR == 9:
+    elif oR == 19:
         o1 = int(oR - 2)
         o2 = int(oR - 1)
         o3 = int(oR)
         o4 = int(oR + 1)
         o5 = int(oR - 3)
 
-    elif oR == 10:
+    elif oR == 20:
         o1 = int(oR - 2)
         o2 = int(oR - 1)
         o3 = int(oR)
@@ -234,12 +234,6 @@ for player in playerIDArray:
     print('opponent 5: team ', opID5)
 
     difficultyBubble = [opID1, opID2, opID3, opID4, opID5]
-
-
-
-
-
-
 
     # ________________________ EXPLOSIVENESS _____________________
 
