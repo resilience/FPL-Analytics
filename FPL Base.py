@@ -168,11 +168,43 @@ for player in playerIDArray:
 
     print(difficultyRank)
 
-    o1 = oR - 2
-    o2 = int(oR - 1)
-    o3 = int(oR)
-    o4 = int(oR + 1)
-    o5 = int(oR + 2)
+    # Points should be allocated differently depending on the distance from the first ranking
+    # Thus weaker teams should way less towards the difficulty, and stronger teams should way more.
+
+    if 3 <= oR <= 8:
+        o1 = int(oR - 2)
+        o2 = int(oR - 1)
+        o3 = int(oR)
+        o4 = int(oR + 1)
+        o5 = int(oR + 2)
+        
+    elif oR == 2:
+        o1 = int(oR + 3)
+        o2 = int(oR - 1)
+        o3 = int(oR)
+        o4 = int(oR + 1)
+        o5 = int(oR + 2)
+
+    elif oR == 1:
+        o1 = int(oR + 3)
+        o2 = int(oR + 4)
+        o3 = int(oR)
+        o4 = int(oR + 1)
+        o5 = int(oR + 2)
+
+    elif oR == 9:
+        o1 = int(oR - 2)
+        o2 = int(oR - 1)
+        o3 = int(oR)
+        o4 = int(oR + 1)
+        o5 = int(oR - 3)
+
+    elif oR == 10:
+        o1 = int(oR - 2)
+        o2 = int(oR - 1)
+        o3 = int(oR)
+        o4 = int(oR - 3)
+        o5 = int(oR - 4)
 
     # Finding how deep the rank is we're looking for
 
