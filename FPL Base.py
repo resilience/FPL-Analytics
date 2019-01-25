@@ -19,7 +19,7 @@ myopener = MyOpener()
 
 
 # player ID's selected for evaluation
-playerIDArray =['253']
+playerIDArray =[253]
 #playerIDArray =['253','372','122','23','270','246','275','302','172']
 
 # ______________________________RANKING__________________________________
@@ -57,22 +57,22 @@ for fixture in fixtures:
             if scoreA > scoreH:
                 teamMatrix[teamA-1,1] = teamMatrix[teamA-1,1]+3
                 print("team ", teamA," wins")
-                print("printing matrix: teamMatrix ", teamMatrix)
-                print("printing matrix: teamMatrix[teamA][0] ", teamMatrix[teamA][0])
-                print("printing matrix: teamMatrix[teamA][1] ", teamMatrix[teamA][1])
+             #   print("printing matrix: teamMatrix ", teamMatrix)
+             #   print("printing matrix: teamMatrix[teamA][0] ", teamMatrix[teamA][0])
+             #   print("printing matrix: teamMatrix[teamA][1] ", teamMatrix[teamA][1])
 
             elif scoreA < scoreH:
                 teamMatrix[teamH-1, 1] = teamMatrix[teamH-1, 1] + 3
                 print("team ", teamH," wins")
-                print("printing matrix: teamMatrix ", teamMatrix)
-                print("printing matrix: teamMatrix[teamA][0] ", teamMatrix[teamH][0])
-                print("printing matrix: teamMatrix[teamA][1] ", teamMatrix[teamH][1])
+               # print("printing matrix: teamMatrix ", teamMatrix)
+              # print("printing matrix: teamMatrix[teamA][0] ", teamMatrix[teamH][0])
+               # print("printing matrix: teamMatrix[teamA][1] ", teamMatrix[teamH][1])
             elif scoreA == scoreH:
                 print("teams draw")
                 teamMatrix[teamA-1, 1] = teamMatrix[teamA-1, 1] + 1
                 teamMatrix[teamH-1, 1] = teamMatrix[teamH-1, 1] + 1
-                print("team A teamMatrix[teamA] ",teamMatrix[teamA])
-                print("team H teamMatrix[teamH] ", teamMatrix[teamH])
+               # print("team A teamMatrix[teamA] ",teamMatrix[teamA])
+                #print("team H teamMatrix[teamH] ", teamMatrix[teamH])
 
         except (IndexError, TypeError) as iE:
 
@@ -82,7 +82,7 @@ print("All matches swept")
 # ____________________ SORT RANKING___________________
 teamMatrix = teamMatrix[teamMatrix[:, 1].argsort()[::-1]]
 teamMatrix[:, 2] = np.arange(1, 21)
-print(teamMatrix)
+#print(teamMatrix)
 
 
 # ________________________________PLAYER ANALYSIS_______________________________
@@ -96,7 +96,7 @@ for player in playerIDArray:
 
     apiTeamURL = 'https://fantasy.premierleague.com/drf/bootstrap'
     try:
-        this = apiPlayerURL + param
+        this = apiPlayerURL + str(param)
 
     except ValueError as vE:
         print('Value Error on ' + param)
@@ -142,7 +142,13 @@ for player in playerIDArray:
 
         opponentID = fplPlayerData['fixtures'][0].get('team_h')
 
-    team = fplSummaryData['elements'][int(player)].get('team')
+    playerData = fplSummaryData['elements']
+
+    for i in playerData:
+
+        if i['id'] == player:
+            team = i['team_code']
+            break
     print('Players Team: ', team)
     print('nextOpponent: ',nextOpponent)
     print('opponent playing Home? ',opponentHome)
@@ -156,7 +162,8 @@ for player in playerIDArray:
     # of similar opponent strength and the points generated against them.
 
     teamMatrix = teamMatrix[teamMatrix[:, 0].argsort()]
-    team = fplSummaryData['elements'][int(player)].get('team')
+
+    print('player :', int(player))
    # print('Players Team: ', team)
 
    # print(teamMatrix)
@@ -245,13 +252,19 @@ for player in playerIDArray:
                 try:
                     score = fplPlayerData['history'][gameweek].get('total_points')
                     if fplPlayerData['history'][gameweek].get('opponent_team') == opId:
-                     print(player, 'scored ', score, ' against team ', opId)
+                        print(player, 'scored ', score, ' against team ', opId)
+                        scores = scores + score
+
 
                 except IndexError as iE:
-                    print('gameweek: ', gameweek+1)
+
                     continue
 
         print('Projected average score: ', scores/5)
+
+
+
+
 
 
 
