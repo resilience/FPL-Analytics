@@ -20,7 +20,7 @@ myopener = MyOpener()
 
 # player ID's selected for evaluation
 playerIDArray =[253]
-#playerIDArray =['253','372','122','23','270','246','275','302','172']
+playerIDArray =[253,372,122,23,270,246,275,302,172]
 
 # ______________________________RANKING__________________________________
 
@@ -40,7 +40,7 @@ apiFixturesSearch = myopener.open(apiFixturesURL.strip()).read()
 fplFixturesData = json.loads(apiFixturesSearch.decode('utf-8'))
 fixtures = list(range(0, 233))
 
-teamMatrix = np.zeros((20, 3))
+teamMatrix = np.zeros((20, 4))
 teamMatrix[:,0] = np.arange(1, 21)
 
 for fixture in fixtures:
@@ -148,11 +148,22 @@ for player in playerIDArray:
 
         if i['id'] == player:
             team = i['team_code']
+            firstName = i['first_name']
+            secondName = i['second_name']
+            cost = i['now_cost']
+            totalPoints = i['total_points']
+
             break
+    print('player :', int(player))
+    print(firstName, ' ',secondName)
     print('Players Team: ', team)
+    print('cost :', cost)
+    print('Total Points :', totalPoints)
+
     print('nextOpponent: ',nextOpponent)
-    print('opponent playing Home? ',opponentHome)
     print('next opponent ID: ', opponentID)
+    print('opponent playing Home? ', opponentHome)
+
 
     # ________________________ DIFFICULTY BUBBLE___________________________
     # 2.
@@ -163,7 +174,7 @@ for player in playerIDArray:
 
     teamMatrix = teamMatrix[teamMatrix[:, 0].argsort()]
 
-    print('player :', int(player))
+
    # print('Players Team: ', team)
 
    # print(teamMatrix)
@@ -252,7 +263,7 @@ for player in playerIDArray:
                 try:
                     score = fplPlayerData['history'][gameweek].get('total_points')
                     if fplPlayerData['history'][gameweek].get('opponent_team') == opId:
-                        print(player, 'scored ', score, ' against team ', opId)
+                        print(secondName, 'scored ', score, ' against team ', opId)
                         scores = scores + score
 
 
@@ -260,7 +271,7 @@ for player in playerIDArray:
 
                     continue
 
-        print('Projected average score: ', scores/5)
+    print('Projected average score: ', scores/5)
 
 
 
