@@ -19,8 +19,8 @@ myopener = MyOpener()
 
 
 # player ID's selected for evaluation
-#playerIDArray =['372']
-playerIDArray =['253','372','122','23','270','246','275','302','172']
+playerIDArray =['253']
+#playerIDArray =['253','372','122','23','270','246','275','302','172']
 
 # ______________________________RANKING__________________________________
 
@@ -142,6 +142,8 @@ for player in playerIDArray:
 
         opponentID = fplPlayerData['fixtures'][0].get('team_h')
 
+    team = fplSummaryData['elements'][int(player)].get('team')
+    print('Players Team: ', team)
     print('nextOpponent: ',nextOpponent)
     print('opponent playing Home? ',opponentHome)
     print('next opponent ID: ', opponentID)
@@ -155,9 +157,9 @@ for player in playerIDArray:
 
     teamMatrix = teamMatrix[teamMatrix[:, 0].argsort()]
     team = fplSummaryData['elements'][int(player)].get('team')
-    print('Team: ', team)
+   # print('Players Team: ', team)
 
-    print(teamMatrix)
+   # print(teamMatrix)
 
     # not sure why, the below is not returning the right values, change 0 to 1 or 2 and test
 
@@ -210,16 +212,16 @@ for player in playerIDArray:
 
     def column(matrix, i):
         return [row[i] for row in matrix]
-    print('column 3 values: ')
+   # print('column 3 values: ')
     rankList = column(teamMatrix, 2)
-    print('rank list: ', rankList)
+   # print('rank list: ', rankList)
     item1Depth = rankList.index(o1)
     item2Depth = rankList.index(o2)
     item3Depth = rankList.index(o3)
     item4Depth = rankList.index(o4)
     item5Depth = rankList.index(o5)
 
-    print('item 1 depth: ', item1Depth)
+   # print('item 1 depth: ', item1Depth)
 
     opID1 = teamMatrix[item1Depth][0]
     opID2 = teamMatrix[item2Depth][0]
@@ -234,6 +236,24 @@ for player in playerIDArray:
     print('opponent 5: team ', opID5)
 
     difficultyBubble = [opID1, opID2, opID3, opID4, opID5]
+    scores = 0
+
+    for opId in difficultyBubble:
+        gameweeks = list(range(37, -1, -1))
+
+        for gameweek in gameweeks:
+                try:
+                    score = fplPlayerData['history'][gameweek].get('total_points')
+                    if fplPlayerData['history'][gameweek].get('opponent_team') == opId:
+                     print(player, 'scored ', score, ' against team ', opId)
+
+                except IndexError as iE:
+                    print('gameweek: ', gameweek+1)
+                    continue
+
+        print('Projected average score: ', scores/5)
+
+
 
     # ________________________ EXPLOSIVENESS _____________________
 
@@ -243,6 +263,11 @@ for player in playerIDArray:
     # against the calibre of fixtures playing.
     # for instance if Liverpool is the top team, and the player selected has exploded against liverpool
     # the player gains 1% for each team in his difficulty bubble that is weaker than Liverpool
+
+
+
+
+
 
     # _________________________CSV OUTPUT________________________
 
