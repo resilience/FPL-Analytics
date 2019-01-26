@@ -82,7 +82,7 @@ print("All matches swept")
 # ____________________ SORT RANKING___________________
 teamMatrix = teamMatrix[teamMatrix[:, 1].argsort()[::-1]]
 teamMatrix[:, 2] = np.arange(1, 21)
-#print(teamMatrix)
+print(teamMatrix)
 
 
 # ________________________________PLAYER ANALYSIS_______________________________
@@ -126,6 +126,9 @@ for player in playerIDArray:
             points.append(point)
 
             print("round: ", round, " points: ", point)
+
+
+
 
     except IndexError as iE:
 
@@ -177,7 +180,7 @@ for player in playerIDArray:
 
    # print('Players Team: ', team)
 
-   # print(teamMatrix)
+    print(teamMatrix)
 
     # not sure why, the below is not returning the right values, change 0 to 1 or 2 and test
 
@@ -230,16 +233,16 @@ for player in playerIDArray:
 
     def column(matrix, i):
         return [row[i] for row in matrix]
-   # print('column 3 values: ')
+    print('column 3 values: ')
     rankList = column(teamMatrix, 2)
-   # print('rank list: ', rankList)
+    print('rank list: ', rankList)
     item1Depth = rankList.index(o1)
     item2Depth = rankList.index(o2)
     item3Depth = rankList.index(o3)
     item4Depth = rankList.index(o4)
     item5Depth = rankList.index(o5)
 
-   # print('item 1 depth: ', item1Depth)
+    print('item 1 depth: ', item1Depth)
 
     opID1 = teamMatrix[item1Depth][0]
     opID2 = teamMatrix[item2Depth][0]
@@ -256,6 +259,7 @@ for player in playerIDArray:
     difficultyBubble = [opID1, opID2, opID3, opID4, opID5]
     scores = 0
 
+
     for opId in difficultyBubble:
         gameweeks = list(range(37, -1, -1))
 
@@ -266,18 +270,47 @@ for player in playerIDArray:
                         print(secondName, 'scored ', score, ' against team ', opId)
                         scores = scores + score
 
+                        if score > 8:
+                            print()
+
 
                 except IndexError as iE:
 
                     continue
 
     print('Projected average score: ', scores/5)
-
-
-
-
-
-
+# ________________________________________________________________________________________
+# ________________________________________________________________________________________
+# ________________________________________________________________________________________
+    # TO DO
+    #   1. List all players in order of
+    #     - 10 week rolling average
+    #     - 5 week rolling average
+    #     - relative power
+    #     - number of explosions ( number of scores above
+    #       ( if 1 - 3 usually, it has to be higher than 6
+    #     - estimate performance against next team
+    #     - reliability
+    #          - how well have they done against those calibre in the last 5 weeks
+    #          - how many goals they have scored recently
+    #          - how many assists have they scored recently
+    #          - how consistent their scores have been recently
+    #
+    #   2. return top 6 players based on each player type
+    #   3. Explosion logic
+    #       - probability to explode
+    #       - describe the players explosion tendencies
+    #           if against anyone, weaker or stronger teams and the reliability of this classification
+    #       - describe their explosion strength
+    #           determined by their recent frequency, overall frequency, and explosion size
+    #       - weigh different explosion classes against each other. so best in class gets points
+    #       - include pricing in the array so i can list by price or find by price range
+    #
+    #   4. Compare arrays of teams by showcasing the range of their low and high score probabilities
+    #   5.
+# ________________________________________________________________________________________
+# ________________________________________________________________________________________
+# ________________________________________________________________________________________
 
     # ________________________ EXPLOSIVENESS _____________________
 
@@ -288,8 +321,25 @@ for player in playerIDArray:
     # for instance if Liverpool is the top team, and the player selected has exploded against liverpool
     # the player gains 1% for each team in his difficulty bubble that is weaker than Liverpool
 
+    gameweeks = list(range(37, -1, -1))
+    for gameweek in gameweeks:
 
+        try:
+            round = fplPlayerData['history'][gameweek].get('round')
 
+            point = fplPlayerData['history'][gameweek].get('total_points')
+
+            if point > 8:
+
+                victim = fplPlayerData['history'][gameweek].get('opponent_team')
+                explPoint = point
+
+            else:
+                # points = points + point
+                print()
+
+        except IndexError as iE:
+             continue
 
 
 
@@ -297,13 +347,4 @@ for player in playerIDArray:
 
     # Store data as 'n collection in CSV for viewing in excel or upload to site
 
-'''
-    opponenentRank =
-    oR = opponentRank
-    difficultyBubbleFixtures = [ oR-2, oR-1 ,oR ,oR +1, oR +2]
-    difficultyBubbleGWs =
 
-
-    nextFixtureAverage = difficultyBubblePoints / difficultyBubbleFixtures
-
-'''
