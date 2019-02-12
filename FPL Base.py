@@ -26,7 +26,6 @@ c.execute("""CREATE TABLE IF NOT EXISTS players (
             productFirstName text collate nocase NOT NULL,
             productSecondName text collate nocase NOT NULL,
             playerRole text collate nocase NOT NULL,
-            playerPrice real,
             rollingAverage real,
             totalPoints real,
             playerTeam text collate nocase NOT NULL,
@@ -50,7 +49,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS pointsList (
 
 # player ID's selected for evaluation
 #playerIDArray =[122,118,115,150,391]
-playerIDArray =[253,372,122,126,305,91,221,484,88,23,270,246,275,302,172,357,247,393,437,57,425,468,40,280,116,292,335,122,118,115,150,391,275,257,23,43,22,281,300,40,462	,271,268,440,465,49	,364,147, 301]
+playerIDArray =[253,372,122,126,305,91,221,484,88,270,246,275,302,172,357,247,393,437,57,425,468,280,116,292,335, 118,115,150,391,257,23,43,22,281,300,40,462,271,268,440,465,49,364,147,301]
 
 
 
@@ -195,7 +194,7 @@ def scanPlayers():
                 totalPoints = i['total_points']
                 playerRole = i['element_type']
                 totalGoals = i['goals_scored']
-                totalAssits = i['assists']
+                totalAssists = i['assists']
 
 
                 break
@@ -325,8 +324,12 @@ def scanPlayers():
                     #playerExplosivity real, playerTotalGoals, playerTotalAssists
 
         print('Projected average score: ', scores/5)
-        params = (player, firstName, secondName, playerRole, cost, rollingAverage, totalPoints, team, cost, nextOpponent )
-        c.execute("INSERT INTO players VALUES (Null, ?,?,?,?,?,?,?,?,?,?,?,?)", params)
+        params = (player, firstName, secondName, playerRole, rollingAverage, totalPoints, team, cost, nextOpponent, '', totalGoals, totalAssists )
+        try:
+            c.execute("INSERT INTO players VALUES (?, ?,?,?,?,?,?,?,?,?,?,?)", params)
+        except sqlite3.IntegrityError as uniqueError:
+            print('player already exists')
+            # c.execute("UPDATE players SET rollingAverage, totalPoints, cost, nextOpponent, explosivity, totalGoals, totalAssists
 
 
     # ________________________________________________________________________________________
@@ -362,7 +365,7 @@ def scanPlayers():
     # ________________________________________________________________________________________
     # ________________________________________________________________________________________
 
-        # ________________________ EXPLOSIVENESS _____________________
+        # ________________________ EXPLOSIVENESS _____________showPlayer  ________
 
         # Explosiveness is calculated as 1% for each fixture in the difficulty bubble
         # that has a chance of exploding ( gaining more than 10 points )
@@ -399,8 +402,12 @@ def scanPlayers():
         # Store data as 'n collection in CSV for viewing in excel or upload to site
 
 
-scanPlayers()
+#scanPlayers()
 
-def showPlayer(x):
-    x = input("Player code?")
-    c.execute('SELECT * from players WHERE playerCode = x;')
+def showPlayer():
+    x = input("Player code? ")
+    c.execute('SELECT * from players WHERE playerCode = '+str(x)+';')
+    res = c.fetchone()
+    print(res)
+
+showPlayer()
