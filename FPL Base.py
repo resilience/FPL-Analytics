@@ -402,7 +402,7 @@ def scanPlayers():
         # Store data as 'n collection in CSV for viewing in excel or upload to site
 
 
-#scanPlayers()
+scanPlayers()
 
 def showPlayer():
     x = input("Player code? ")
@@ -411,3 +411,10 @@ def showPlayer():
     print(res)
 
 showPlayer()
+
+def showTop10():
+    y = input("Top 10 of what role? ")
+    c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY rollingAverage;')
+    res = c.fetchmany(10)
+    print(res)
+showTop10()
