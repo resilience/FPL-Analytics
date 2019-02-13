@@ -49,7 +49,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS pointsList (
 
 # player ID's selected for evaluation
 #playerIDArray =[122,118,115,150,391]
-playerIDArray =[253,372,122,126,305,91,221,484,88,270,246,275,302,172,357,247,393,437,57,425,468,280,116,292,335, 118,115,150,391,257,23,43,22,281,300,40,462,271,268,440,465,49,364,147,301]
+playerIDArray = range(1, 500)
 
 
 
@@ -190,7 +190,7 @@ def scanPlayers():
                 team = i['team_code']
                 firstName = i['first_name']
                 secondName = i['second_name']
-                cost = i['now_cost']
+                cost = i['now_cost']/10
                 totalPoints = i['total_points']
                 playerRole = i['element_type']
                 totalGoals = i['goals_scored']
@@ -327,6 +327,7 @@ def scanPlayers():
         params = (player, firstName, secondName, playerRole, rollingAverage, totalPoints, team, cost, nextOpponent, '', totalGoals, totalAssists )
         try:
             c.execute("INSERT INTO players VALUES (?, ?,?,?,?,?,?,?,?,?,?,?)", params)
+            conn.commit()
         except sqlite3.IntegrityError as uniqueError:
             print('player already exists')
             # c.execute("UPDATE players SET rollingAverage, totalPoints, cost, nextOpponent, explosivity, totalGoals, totalAssists
@@ -401,7 +402,7 @@ def scanPlayers():
         # Store data as 'n collection in CSV for viewing in excel or upload to site
 
 
-#scanPlayers()
+scanPlayers()
 
 def showPlayer():
     x = input("Player code? ")
