@@ -395,14 +395,13 @@ def scanPlayers():
             except IndexError as iE:
                  continue
 
-
-
+    conn.commit()
         # _________________________CSV OUTPUT________________________
 
         # Store data as 'n collection in CSV for viewing in excel or upload to site
 
 
-scanPlayers()
+#scanPlayers()
 
 def showPlayer():
     x = input("Player code? ")
@@ -411,10 +410,18 @@ def showPlayer():
     print(res)
 
 showPlayer()
-
+go = 1
 def showTop10():
+
     y = input("Top 10 of what role? ")
-    c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY rollingAverage;')
-    res = c.fetchmany(10)
-    print(res)
-showTop10()
+    if y == 'exit':
+        go = 0
+    else:
+        c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY rollingAverage DESC;')
+        res = c.fetchmany(10)
+        print(res)
+
+
+
+while go == 1:
+    showTop10()
