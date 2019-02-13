@@ -26,11 +26,18 @@ c.execute("""CREATE TABLE IF NOT EXISTS players (
             productFirstName text collate nocase NOT NULL,
             productSecondName text collate nocase NOT NULL,
             playerRole text collate nocase NOT NULL,
+            projectedScore real,
             rollingAverage real,
             totalPoints real,
             playerTeam text collate nocase NOT NULL,
             playerPrice real,
             nextOpponent text collate nocase NOT NULL,
+            opRank integer,
+            opID1 integer,
+            opID2 integer,
+            opID3 integer,
+            opID4 integer,
+            opID5 integer,
             playerExplosivity real,
             playerTotalGoals,
             playerTotalAssists
@@ -324,9 +331,9 @@ def scanPlayers():
                     #playerExplosivity real, playerTotalGoals, playerTotalAssists
 
         print('Projected average score: ', scores/5)
-        params = (player, firstName, secondName, playerRole, rollingAverage, totalPoints, team, cost, nextOpponent, '', totalGoals, totalAssists )
+        params = (player, firstName, secondName, playerRole, scores/5, rollingAverage, totalPoints, team, cost, nextOpponent,oR,opID1,opID2,opID3,opID4, opID5,'', totalGoals, totalAssists )
         try:
-            c.execute("INSERT INTO players VALUES (?, ?,?,?,?,?,?,?,?,?,?,?)", params)
+            c.execute("INSERT INTO players VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", params)
             conn.commit()
         except sqlite3.IntegrityError as uniqueError:
             print('player already exists')
