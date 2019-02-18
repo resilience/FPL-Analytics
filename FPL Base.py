@@ -409,7 +409,8 @@ def scanPlayers():
         # Store data as 'n collection in CSV for viewing in excel or upload to site
 
 
-scanPlayers()
+#scanPlayers()
+
 
 def showPlayer():
     x = input("Player code? ")
@@ -417,19 +418,33 @@ def showPlayer():
     res = c.fetchone()
     print(res)
 
-showPlayer()
+#showPlayer()
 go = 1
-def showTop10():
+def showTop():
 
-    y = input("Top 10 of what role? ")
+    y = input("what role? ")
+    many = input("Top how many?")
     if y == 'exit':
         go = 0
+
+    # Don't incorporate heavily skewed data?
     else:
-        c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY rollingAverage DESC;')
-        res = c.fetchmany(10)
-        print(res)
+        c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY projectedScore DESC;')
+        ps = c.fetchmany(int(many))
+        print("PROJECTED SCORE RANKING: ", ps)
 
+        c.execute('SELECT * from players WHERE playerRole = ' + str(y) + ' ORDER BY rollingAverage DESC;')
+        res = c.fetchmany(int(many))
+        print("ROLLING AVERAGE RANKING: ", res)
 
+def pickMethod():
+    r = input("What would you like to do: Press 1 to search a player. Press 2 to show top in role.")
+    if r == 1:
+      showPlayer()
+    elif r == 2:
+      showTop()
+pickMethod()
 
 while go == 1:
-    showTop10()
+    showTop()
+
