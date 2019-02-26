@@ -437,6 +437,13 @@ def showTop():
         res = c.fetchmany(int(many))
         print("ROLLING AVERAGE RANKING: ", res)
 
+        c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY totalPoints / playerPrice DESC;')
+        performance = c.fetchmany(int(many))
+        print("PRICE PERFORMANCE RANKING: ", performance)
+
+        c.execute('SELECT * from players WHERE playerRole = ' + str(y) + ' ORDER BY (totalPoints/37*3) + (rollingAverage*2) + (projectedScore/2)  DESC;')
+        mixed = c.fetchmany(int(many))
+        print("MIXED RANKING: ", mixed)
 def pickMethod():
     r = input("What would you like to do: Press 1 to search a player. Press 2 to show top in role.")
     if r == 1:
