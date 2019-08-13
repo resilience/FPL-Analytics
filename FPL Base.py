@@ -8,6 +8,7 @@ from unidecode import unidecode
 from urllib.request import FancyURLopener
 import pymysql
 import socket
+import sqlite3
 
 socket.getaddrinfo('127.0.0.1', 8080)
 
@@ -486,6 +487,7 @@ def showTop():
         res = c.fetchmany(int(many))
         print("ROLLING AVERAGE RANKING: ", res)
 
+<<<<<<< HEAD
         c.execute('SELECT * from players WHERE playerPrice < '+str(price)+' AND playerRole = '+str(y)+' ORDER BY totalPoints / playerPrice DESC;')
         performance = c.fetchmany(int(many))
         print("PRICE PERFORMANCE RANKING: ", performance)
@@ -495,6 +497,15 @@ def showTop():
         print("MIXED RANKING: ", mixed)
 
 
+=======
+        c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY totalPoints / playerPrice DESC;')
+        performance = c.fetchmany(int(many))
+        print("PRICE PERFORMANCE RANKING: ", performance)
+
+        c.execute('SELECT * from players WHERE playerRole = ' + str(y) + ' ORDER BY (totalPoints/37*3) + (rollingAverage*2) + (projectedScore/2)  DESC;')
+        mixed = c.fetchmany(int(many))
+        print("MIXED RANKING: ", mixed)
+>>>>>>> 74414f8a9532581293f38c753ced68ab4f7a719d
 def pickMethod():
     r = input("What would you like to do: Press 1 to search a player. Press 2 to show top in role.")
     if r == 1:
