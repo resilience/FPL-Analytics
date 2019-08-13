@@ -6,9 +6,12 @@ import numpy as np
 import sys
 from unidecode import unidecode
 from urllib.request import FancyURLopener
-import sqlite3
+import pymysql
+import socket
 
-conn = sqlite3.connect('FPL.db')
+socket.getaddrinfo('127.0.0.1', 8080)
+
+conn = pymysql.connect(host='127.0.0.1', user='root', password='password', db='fpl-db')
 c = conn.cursor()
 
 mz = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
@@ -21,7 +24,7 @@ myopener = MyOpener()
 
 # params = (player, firstName, secondName, playerRole, playerPrice, rollingAverage, totalpoints, team, cost, nextOpponent, '', '', '', )
 
-c.execute("""CREATE TABLE IF NOT EXISTS players (
+c.execute("""CREATE TABLE IF NOT EXISTS playersCurrentStats (
             playerCode integer PRIMARY KEY NOT NULL,
             productFirstName text collate nocase NOT NULL,
             productSecondName text collate nocase NOT NULL,
@@ -54,6 +57,40 @@ c.execute("""CREATE TABLE IF NOT EXISTS pointsList (
              redCard integer NOT NULL,
              minutePlayed integer )""")
 
+
+c.execute("""CREATE TABLE IF NOT EXISTS players (
+             playerCode integer PRIMARY KEY NOT NULL,
+             productFirstName text collate nocase NOT NULL,
+             productSecondName text collate nocase NOT NULL,
+             playerRole text collate nocase NOT NULL,
+             totalPoints real, )""")
+
+c.execute("""CREATE TABLE IF NOT EXISTS performances (
+             performanceID integer PRIMARY KEY NOT NULL,
+             playerCode integer NOT NULL,
+             gameweek text collate nocase NOT NULL,
+             goals_scored real,
+             assists real,
+             clean_sheets real,
+             goals_conceded real,
+             own_goals real,
+             penalties_saved real,
+             penalties_missed real,
+             yellow_cards real,
+             red_cards real,
+             saves real,
+             bonus real,
+             bps real,
+             influence float,
+             creativity float,
+             threat float,
+             ict_index float,
+             total_points real,
+             in_dreamteam text collate nocase,
+             )""")
+
+
+
 # player ID's selected for evaluation
 #playerIDArray =[122,118,115,150,391]
 playerIDArray = range(1, 500)
@@ -75,6 +112,17 @@ playerIDArray = range(1, 500)
 # Rank Team accordingly
 
 # Using the ranking we can then find out the teams in the current difficulty bubble
+
+def scanMatches():
+
+    gameweeks = list(range(37, -1, -1))
+
+    for gameweek in gameweeks:
+        apiEvents = 'https://fantasy.premierleague.com/api/event/' + str(gameweek) + '/live/'
+        apiEventSearch = myopener.open(apiEvents.strip()).read()
+        apiEventsData = json.loads(apiEventsData.decode('utf-8'))
+
+        for player in playerIDArray:
 
 
 
@@ -133,12 +181,12 @@ def scanPlayers():
     k = 0
     for player in playerIDArray:
 
-        apiPlayerURL = 'https://fantasy.premierleague.com/drf/element-summary/'
+        apiPlayerURL = 'https://fantasy.premierleague.com/api/element-summary/'
         param = player
 
-        apiSummaryURL = 'https://fantasy.premierleague.com/drf/bootstrap-static'
+        apiSummaryURL = 'https://fantasy.premierleague.com/api/bootstrap-static'
 
-        apiTeamURL = 'https://fantasy.premierleague.com/drf/bootstrap'
+        apiTeamURL = 'https://fantasy.premierleague.com/api/bootstrap'
         try:
             this = apiPlayerURL + str(param)
 
@@ -424,18 +472,28 @@ def showTop():
 
     y = input("what role? ")
     many = input("Top how many?")
+    price = input("Price?")
     if y == 'exit':
         go = 0
 
     # Don't incorporate heavily skewed data?
     else:
-        c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY projectedScore DESC;')
+        c.execute('SELECT * from players WHERE playerPrice < '+str(price)+' AND playerRole = '+str(y)+' ORDER BY projectedScore DESC;')
         ps = c.fetchmany(int(many))
         print("PROJECTED SCORE RANKING: ", ps)
 
-        c.execute('SELECT * from players WHERE playerRole = ' + str(y) + ' ORDER BY rollingAverage DESC;')
+        c.execute('SELECT * from players WHERE playerPrice < '+str(price)+' AND playerRole = ' + str(y) + ' ORDER BY rollingAverage DESC;')
         res = c.fetchmany(int(many))
         print("ROLLING AVERAGE RANKING: ", res)
+
+        c.execute('SELECT * from players WHERE playerPrice < '+str(price)+' AND playerRole = '+str(y)+' ORDER BY totalPoints / playerPrice DESC;')
+        performance = c.fetchmany(int(many))
+        print("PRICE PERFORMANCE RANKING: ", performance)
+
+        c.execute('SELECT * from players WHERE playerPrice < '+str(price)+' AND playerRole = ' + str(y) + ' ORDER BY (totalPoints/37*3) + (rollingAverage*2) + (projectedScore/2)  DESC;')
+        mixed = c.fetchmany(int(many))
+        print("MIXED RANKING: ", mixed)
+
 
 def pickMethod():
     r = input("What would you like to do: Press 1 to search a player. Press 2 to show top in role.")
