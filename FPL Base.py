@@ -12,7 +12,7 @@ import sqlite3
 
 socket.getaddrinfo('127.0.0.1', 8080)
 
-conn = pymysql.connect(host='127.0.0.1', user='root', password='password', db='fpl-db')
+conn = pymysql.connect(host='127.0.0.1', user='root', password='hyvemobilepassword', db='fpldb')
 c = conn.cursor()
 
 mz = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
@@ -27,15 +27,15 @@ myopener = MyOpener()
 
 c.execute("""CREATE TABLE IF NOT EXISTS playersCurrentStats (
             playerCode integer PRIMARY KEY NOT NULL,
-            productFirstName text collate nocase NOT NULL,
-            productSecondName text collate nocase NOT NULL,
-            playerRole text collate nocase NOT NULL,
+            productFirstName VARCHAR(255) NOT NULL,
+            productSecondName VARCHAR(255) NOT NULL,
+            playerRole VARCHAR(255) NOT NULL,
             projectedScore real,
             rollingAverage real,
             totalPoints real,
-            playerTeam text collate nocase NOT NULL,
+            playerTeam VARCHAR(255) NOT NULL,
             playerPrice real,
-            nextOpponent text collate nocase NOT NULL,
+            nextOpponent VARCHAR(255) NOT NULL,
             opRank integer,
             opID1 integer,
             opID2 integer,
@@ -43,33 +43,34 @@ c.execute("""CREATE TABLE IF NOT EXISTS playersCurrentStats (
             opID4 integer,
             opID5 integer,
             playerExplosivity real,
-            playerTotalGoals,
-            playerTotalAssists
+            playerTotalGoals INT NOT NULL,
+            playerTotalAssists INT NOT NULL
             )""")
 
 c.execute("""CREATE TABLE IF NOT EXISTS pointsList (
              pointsID integer PRIMARY KEY NOT NULL,
-             playerCode integer NOT NULL,
-             goalAmount integer NOT NULL,
-             assistAmount integer NOT NULL,
-             bonusPointAmount integer NOT NULL,
-             gameWeek integer NOT NULL,
-             yellowCard integer NOT NULL,
-             redCard integer NOT NULL,
-             minutePlayed integer )""")
+             playerCode INT NOT NULL,
+             goalAmount INT NOT NULL,
+             assistAmount INT NOT NULL,
+             bonusPointAmount INT NOT NULL,
+             gameWeek INT NOT NULL,
+             yellowCard INT NOT NULL,
+             redCard INT NOT NULL,
+             minutePlayed INT NOT NULL )""")
 
 
 c.execute("""CREATE TABLE IF NOT EXISTS players (
-             playerCode integer PRIMARY KEY NOT NULL,
-             productFirstName text collate nocase NOT NULL,
-             productSecondName text collate nocase NOT NULL,
-             playerRole text collate nocase NOT NULL,
-             totalPoints real, )""")
+             playerCode INT PRIMARY KEY NOT NULL,
+             productFirstName VARCHAR(255) NOT NULL,
+             productSecondName VARCHAR(255) NOT NULL,
+             playerRole VARCHAR(255) NOT NULL,
+             totalPoints real )""")
 
 c.execute("""CREATE TABLE IF NOT EXISTS performances (
-             performanceID integer PRIMARY KEY NOT NULL,
-             playerCode integer NOT NULL,
-             gameweek text collate nocase NOT NULL,
+             performanceID INT PRIMARY KEY NOT NULL,
+             playerCode INT NOT NULL,
+             gameweek VARCHAR(255) NOT NULL,
+             date_year INT NOT NULL,
              goals_scored real,
              assists real,
              clean_sheets real,
@@ -87,14 +88,14 @@ c.execute("""CREATE TABLE IF NOT EXISTS performances (
              threat float,
              ict_index float,
              total_points real,
-             in_dreamteam text collate nocase,
+             in_dreamteam VARCHAR(255) NOT NULL
              )""")
 
 
 
 # player ID's selected for evaluation
 #playerIDArray =[122,118,115,150,391]
-playerIDArray = range(1, 500)
+playerIDArray = range(1, 526)
 
 
 
@@ -116,16 +117,61 @@ playerIDArray = range(1, 500)
 
 def scanMatches():
 
-    gameweeks = list(range(37, -1, -1))
-
+    gameweeks = range(1, 37)
+    performances = range(0, 526)
     for gameweek in gameweeks:
-        apiEvents = 'https://fantasy.premierleague.com/api/event/' + str(gameweek) + '/live/'
-        apiEventSearch = myopener.open(apiEvents.strip()).read()
-        apiEventsData = json.loads(apiEventsData.decode('utf-8'))
+        try:
 
-        for player in playerIDArray:
+            print('Gameweek: ',gameweek)
+            apiEvents = 'https://fantasy.premierleague.com/api/event/' + str(gameweek) + '/live/'
+            print(apiEvents)
+            apiEventSearch = myopener.open(apiEvents.strip()).read()
+            apiEventsData = json.loads(apiEventSearch.decode('utf-8'))
+
+            print(apiEventsData)
+            for performanceID in performances:
+                date_year = 2019
+                print('performance ID: ', performanceID)
+
+                playerCode = apiEventsData['elements'][performanceID].get('id')
+                print('playerCode ', playerCode)
+                goals_scored = apiEventsData['elements'][performanceID]['stats'].get('goals_scored')
+                assists = apiEventsData['elements'][performanceID]['stats'].get('assists')
+                clean_sheets = apiEventsData['elements'][performanceID]['stats'].get('clean_sheets')
+                goals_conceded = apiEventsData['elements'][performanceID]['stats'].get('goals_conceded')
+                own_goals = apiEventsData['elements'][performanceID]['stats'].get('own_goals')
+                penalties_saved = apiEventsData['elements'][performanceID]['stats'].get('penalties_saved')
+                penalties_missed = apiEventsData['elements'][performanceID]['stats'].get('penalties_missed')
+                yellow_cards = apiEventsData['elements'][performanceID]['stats'].get('yellow_cards')
+                red_cards = apiEventsData['elements'][performanceID]['stats'].get('red_cards')
+                saves = apiEventsData['elements'][performanceID]['stats'].get('saves')
+                bonus = apiEventsData['elements'][performanceID]['stats'].get('bonus')
+                bps = apiEventsData['elements'][performanceID]['stats'].get('bps')
+                influence = apiEventsData['elements'][performanceID]['stats'].get('influence')
+                creativity = apiEventsData['elements'][performanceID]['stats'].get('creativity')
+                threat = apiEventsData['elements'][performanceID]['stats'].get('threat')
+                ict_index = apiEventsData['elements'][performanceID]['stats'].get('ict_index')
+                total_points = apiEventsData['elements'][performanceID]['stats'].get('total_points')
+                in_dreamteam = apiEventsData['elements'][performanceID]['stats'].get('in_dreamteam')
+
+                values = (performanceID, playerCode, gameweek, date_year, goals_scored, assists, clean_sheets, goals_conceded, own_goals, penalties_saved, penalties_missed,yellow_cards,red_cards,saves,bonus,bps,influence,creativity,threat,ict_index,total_points,in_dreamteam)
+
+                insertSql = """insert into performances( performanceID, playerCode, gameweek, date_year, goals_scored, assists, clean_sheets, goals_conceded, own_goals, penalties_saved, penalties_missed,yellow_cards,red_cards,saves,bonus,bps,influence,creativity,threat,ict_index,total_points,in_dreamteam ) 
+                                          values (%s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+
+                c.execute(insertSql, values)
+                conn.commit()
+        except pymysql.err.IntegrityError as duplicate:
+            print('already done this gameweek')
 
 
+        except IndexError as iE:
+            print('Index Error ', iE)
+            break
+
+
+
+scanMatches()
 
 def scanPlayers():
     apiFixturesURL = 'https://fantasy.premierleague.com/drf/fixtures/'
@@ -468,9 +514,9 @@ def showPlayer():
     print(res)
 
 #showPlayer()
-go = 1
-def showTop():
 
+def showTop():
+    go = 1
     y = input("what role? ")
     many = input("Top how many?")
     price = input("Price?")
@@ -487,7 +533,6 @@ def showTop():
         res = c.fetchmany(int(many))
         print("ROLLING AVERAGE RANKING: ", res)
 
-<<<<<<< HEAD
         c.execute('SELECT * from players WHERE playerPrice < '+str(price)+' AND playerRole = '+str(y)+' ORDER BY totalPoints / playerPrice DESC;')
         performance = c.fetchmany(int(many))
         print("PRICE PERFORMANCE RANKING: ", performance)
@@ -497,7 +542,6 @@ def showTop():
         print("MIXED RANKING: ", mixed)
 
 
-=======
         c.execute('SELECT * from players WHERE playerRole = '+str(y)+' ORDER BY totalPoints / playerPrice DESC;')
         performance = c.fetchmany(int(many))
         print("PRICE PERFORMANCE RANKING: ", performance)
@@ -505,15 +549,14 @@ def showTop():
         c.execute('SELECT * from players WHERE playerRole = ' + str(y) + ' ORDER BY (totalPoints/37*3) + (rollingAverage*2) + (projectedScore/2)  DESC;')
         mixed = c.fetchmany(int(many))
         print("MIXED RANKING: ", mixed)
->>>>>>> 74414f8a9532581293f38c753ced68ab4f7a719d
+        while go == 1:
+            showTop()
 def pickMethod():
     r = input("What would you like to do: Press 1 to search a player. Press 2 to show top in role.")
     if r == 1:
       showPlayer()
     elif r == 2:
       showTop()
-pickMethod()
+# pickMethod()
 
-while go == 1:
-    showTop()
 
