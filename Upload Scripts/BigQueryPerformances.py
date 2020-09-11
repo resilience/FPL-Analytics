@@ -115,7 +115,7 @@ def getPlayerID(first_name, last_name):
 
 def playerHistory():
 
-    dir = 'G:/Hunt Systems/FPL-Analytics/Fantasy-Premier-League-master/Fantasy-Premier-League-master/data'
+    dir = '/FPL-Analytics/Fantasy-Premier-League-master/Fantasy-Premier-League-master/data'
     file_path = tk.filedialog.askdirectory(initialdir=dir, title="Select folder")
     directory = os.path.split(file_path)[0]
     print(directory)

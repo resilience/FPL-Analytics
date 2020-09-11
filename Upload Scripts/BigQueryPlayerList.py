@@ -25,7 +25,7 @@ storage = "" + dt + " storage "
 outputName = 'dispositions_dataset'
 
 def playerHistory():
-    dir = 'G:/Hunt Systems/FPL-Analytics/Fantasy-Premier-League-master/Fantasy-Premier-League-master/data'
+    dir = '/FPL-Analytics/Fantasy-Premier-League-master/Fantasy-Premier-League-master/data'
     file_path = tk.filedialog.askopenfilename(initialdir=dir, title="Select file", filetypes=[("ALL Files", "*.*")])
     storage = " storage "
     # -------- PARSE CSV INTO JSON ---------------

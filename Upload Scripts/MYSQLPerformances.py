@@ -74,7 +74,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS playerdata (
 # ----------- This method is more reliable but slower depending on region of connection origin.
 
 def playerHistory():
-    dir = 'G:/Hunt Systems/FPL-Analytics/Fantasy-Premier-League-master/Fantasy-Premier-League-master/data'
+    dir = '/FPL-Analytics/Fantasy-Premier-League-master/Fantasy-Premier-League-master/data'
     file_path = tk.filedialog.askopenfilename(initialdir=dir, title="Select file", filetypes=[("ALL Files", "*.*")])
     storage = " storage "
     # -------- PARSE CSV INTO JSON ---------------
