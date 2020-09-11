@@ -11,13 +11,18 @@ import datetime
 import pytz
 import iso8601
 import os
-import pymysql
-import socket
+from google.cloud import bigquery
 
-socket.getaddrinfo('127.0.0.1', 8080)
+# BigQuery Configuration."""
+from os import environ
+# Google BigQuery config
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'G:\Hunt Systems\FPL-Analytics\mykey.json'
+gcp_credentials = os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'G:\Hunt Systems\FPL-Analytics\mykey.json'
+print(gcp_credentials)
 
-conn = pymysql.connect(host='127.0.0.1', user='root', password='hyvemobilepassword', db='fpldb')
-c = conn.cursor()
+client = bigquery.Client(project='fpl-production')
+dataset_id = 'fpl-production:fantasy_data'
+table = client.get_table('fantasy_data.performances')
 
 root = tk.Tk()
 root.withdraw()
@@ -31,43 +36,6 @@ outputName = 'dispositions_dataset'
 #                   Upload Historical Player Data
 #                   Upload
 
-c.execute("""CREATE TABLE IF NOT EXISTS playerdata (
-            historical_year VARCHAR(255) NOT NULL,
-            player_code INT NOT NULL,
-            first_name  VARCHAR(255) NOT NULL,
-            second_name  VARCHAR(255) NOT NULL,
-            assists INT NOT NULL,
-            bonus INT NOT NULL,
-            bps INT NOT NULL,
-            clean_sheets INT NOT NULL,
-            creativity float NOT NULL,
-            fixture INT NOT NULL,
-            goals_conceded INT NOT NULL,
-            goals_scored INT NOT NULL,
-            ict_index float NOT NULL,
-            influence float NOT NULL,
-            kickoff_time VARCHAR(255) NOT NULL,
-            minutes INT NOT NULL,
-            opponent_team INT NOT NULL,
-            own_goals INT NOT NULL,
-            penalties_missed INT NOT NULL,
-            penalties_saved INT NOT NULL,
-            red_cards INT NOT NULL,
-            gameweek INT NOT NULL,
-            saves INT NOT NULL,
-            selected INT NOT NULL,
-            team_a_scored INT NOT NULL,
-            team_h_scored INT NOT NULL,
-            threat float NOT NULL,
-            total_points INT NOT NULL,
-            transfers_balance INT NOT NULL,
-            transfers_in INT NOT NULL,
-            transfers_out INT NOT NULL,
-            price float NOT NULL,
-            was_home VARCHAR(255) NOT NULL,
-            yellow_cards INT NOT NULL
-
-            )""")
 
 
 # ----------- Inserts new csv data into the cloud ( alternatively use google cloud sql import csv ) ------------
@@ -210,8 +178,6 @@ def playerHistory():
 
                 except NameError as nE:
                     print('name error', nE)
-                except pymysql.err.InternalError as iE:
-                    print('internal error', iE)
 
                 values = (
                     historical_year,
@@ -255,86 +221,49 @@ def playerHistory():
                 # 35 items in insertSql
 
                 try:
-                    insertSql = """insert into playerdata( 
-                    historical_year,
-                    player_code,
-                    first_name,
-                    second_name,
-                    assists,
-                    bonus,
-                    bps,
-                    clean_sheets,
-                    creativity,
-                    fixture,
-                    goals_conceded,
-                    goals_scored,
-                    ict_index,
-                    influence,
-                    kickoff_time,
-                    minutes,
-                    opponent_team,
-                    own_goals,
-                    penalties_missed,
-                    penalties_saved,
-                    red_cards,
-                    gameweek,
-                    saves,
-                    selected,
-                    team_a_scored,
-                    team_h_scored,
-                    threat,
-                    total_points,
-                    transfers_balance,
-                    transfers_in,
-                    transfers_out,
-                    price,
-                    was_home,
-                    yellow_cards
+                    rows_to_insert = [(
+                        historical_year,
+                        player_code,
+                        first_name,
+                        second_name,
+                        assists,
+                        bonus,
+                        bps,
+                        clean_sheets,
+                        creativity,
+                        fixture,
+                        goals_conceded,
+                        goals_scored,
+                        ict_index,
+                        influence,
+                        kickoff_time,
+                        minutes,
+                        opponent_team,
+                        own_goals,
+                        penalties_missed,
+                        penalties_saved,
+                        red_cards,
+                        gameweek,
+                        saves,
+                        selected,
+                        team_a_scored,
+                        team_h_scored,
+                        threat,
+                        total_points,
+                        transfers_balance,
+                        transfers_in,
+                        transfers_out,
+                        price,
+                        was_home,
+                        yellow_cards
+                             )]
+                    errors = client.insert_rows(
+                        table, rows_to_insert, row_ids=[None] * len(rows_to_insert)
                     )
-                    values (
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s,
-                    %s,
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s,
-                    %s,
-                    %s,
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s, 
-                    %s,
-                    %s
-                    )"""
-                    c.execute(insertSql, values)
-                    conn.commit()
-                except pymysql.err.InternalError as iE:
-                    print('internal error', iE)
-                    time.sleep(10)
-                    for value in values:
-                        print(value, ' ', type(value))
-
+                    if not errors:
+                                print('New Rows have been added')
+                except NameError as error:
+                    print(error)
 
 playerHistory()
 
